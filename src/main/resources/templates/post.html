@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${post.title}">Blog Post</title>
+</head>
+<body>
+<h1>Read A Blog</h1>
+<ul>
+    <li><a th:href="@{/api/posts}">Home</a></li>
+</ul>
+<hr />
+    <div class="container" align="center">
+        <div class="post" th:action="@{posts/{id}(id=${post.id})}" >
+            <h2 th:text="${post.title}" >Title</h2>
+            <div th:text="${post.content}">Content</div>
+            <h3>Comments(<span th:text="${#lists.size(post.comments)}">0</span>)</h3>
+            <div th:if="${#lists.isEmpty(post.comments)}">
+                <p>No comments yet. Be the first to comment!</p>
+            </div>
+            <div th:each="comment: ${post.comments}" class="comment">
+                <div>
+                   <p th:text="${comment.content}">Comment Content</p>
+                </div>
+            </div>
+            <h4>Add a Comment</h4>
+            <form action="#" th:action="@{/api/posts/{id}/comments(id=${post.id})}" th:object="${comments}" method="post">
+                <textarea th:field="*{content}" name="comment" placeholder="Write a comment" required></textarea>
+                <button type="submit">Add Comment</button>
+            </form>
+            <hr />
+            <a th:href="@{/api/posts/{id}/delete(id=${post.id})}" class="Button-Delete">Delete Post</a>
+        </div>
+    </div>
+</body>
+</html>
