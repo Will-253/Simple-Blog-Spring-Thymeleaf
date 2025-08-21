@@ -5,7 +5,6 @@ import com.project.simpleblog.models.Posts;
 import com.project.simpleblog.service.CommentService;
 import com.project.simpleblog.service.PostService;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;

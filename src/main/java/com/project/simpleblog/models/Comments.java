@@ -2,7 +2,6 @@ package com.project.simpleblog.models;
 
 import jakarta.persistence.*;
 
-import java.util.List;
 
 @Entity
 public class Comments {
