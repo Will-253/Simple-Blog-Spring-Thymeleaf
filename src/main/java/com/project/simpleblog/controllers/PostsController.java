@@ -42,6 +42,7 @@ public class PostsController {
 //    api for creating a new post(http://localhost:8080/api/posts)
     @PostMapping
     public String AddNewPost(@ModelAttribute("post") Posts post) {
+        postService.createNewPost(post);
         return "redirect:/api/posts/"+(post.getId());
     }
 
