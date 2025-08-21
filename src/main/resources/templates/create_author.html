@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Author</title>
+</head>
+<body>
+<ul>
+    <li><a th:href="@{/api/posts}">Back</a></li>
+</ul>
+<div class="container">
+    <form th:action="@{/api/posts/author}" th:object="${newAuthor}" method="post" novalidate>
+        <h2>Add Post Author</h2>
+        <div th:if="${#fields.hasErrors('fullName')}" class="error">
+            <p th:each="err: ${#fields.errors('fullName')}" th:text="${err}"></p>
+        </div>
+
+        <!--Step 1:Yes/No-->
+        <div class="form-group">
+            <label><b>Has this author posted before?</b></label><br>
+            <input type="radio" id="postedYes" name="hasPosted" value="yes"
+                   aria-label="Existing Author" onclick="showExistingAuthorForm()" required>
+            <label for="postedYes">Yes</label>
+            <input type="radio" id="postedNo" name="hasPosted" value="no"
+                   aria-label="New Author" onclick="showNewAuthorForm()" required>
+            <label for="postedNo">No</label>
+            <div id="hasPostedError" class="error hidden">Please select an Option</div>
+        </div>
+<!--        <p class="note"><kbd>If the author has already created posts, select their name here:</kbd></p>-->
+        <div id="existingAuthorForm" class="form-group hidden">
+            <label for="author"><b>Select Existing Author</b></label>
+            <select id="author" th:field="*{fullName}" aria-describedby="authorError">
+                <option value="">--Select Main Author--</option>
+                <option th:each="author : ${selectAuthor}"
+                        th:value="${author.fullName}"
+                        th:text="${author.fullName}">
+                </option>
+            </select>
+            <div id="authorError" class="error hidden">Please select an author</div>
+        </div>
+<!--        <p><kbd>Else</kbd></p>-->
+<!--        <p class="note"><kbd>Fill this if the author is new and not in the list above</kbd></p>-->
+        <div id="newAuthorForm" class="form-group hidden">
+            <label for="author-name"><b>Enter Name of Author:</b></label>
+            <input id="author-name" type="text" placeholder="Author Fullname" th:field="*{fullName}"
+                   aria-describedby="authorNameError" pattern="[A-Za-z\s]{2,50}" title="Name must be between 2 and 50 characters, letters and spaces only"/>
+            <div id="authorNameError" class="error hidden">Please enter a valid name</div>
+        </div>
+        <button type="submit">Save Author</button>
+    </form>
+</div>
+<script>
+    function showExistingAuthorForm() {
+        const existingForm = document.getElementById("existingAuthorForm");
+        const newForm = document.getElementById("newAuthorForm");
+        existingForm.classList.remove("hidden");
+        newForm.classList.add("hidden");
+        document.getElementById("author-name").value = "";
+        document.getElementById("author").required = true;
+        document.getElementById("author-name").required = false;
+    }
+    function showNewAuthorForm() {
+        const existingForm = document.getElementById("existingAuthorForm");
+        const newForm = document.getElementById("newAuthorForm");
+        newForm.classList.remove("hidden");
+        existingForm.classList.add("hidden");
+        document.getElementById("author").value = "";
+        document.getElementById("author").required = false;
+        document.getElementById("author-name").required = true;
+    }
+    //Client-side validation on the form submitted
+
+    document.querySelector("form").addEventListener("submit", function (event) {
+        const hasPosted=document.querySelector('input[name="hasPosted"]:checked');
+        const authorSelect=document.getElementById("author");
+        const authorName=document.getElementById("author-name");
+        let isValid=true;
+
+        //Validate radio button selection
+        if (!hasPosted){
+            document.getElementById("hasPostedError").classList.remove("hidden");
+            isValid=false;
+        } else{
+            document.getElementById("hasPostedError").classList.add("hidden");
+        }
+
+        //Validate existing author
+        if (hasPosted && hasPosted.value==="yes"&& !authorSelect.value){
+            document.getElementById("authorError").classList.remove("hidden");
+            isValid=false;
+        } else {
+            document.getElementById("authorError").classList.add("hidden");
+        }
+
+        //Validate a new author
+        if (hasPosted && hasPosted.value==="no"&& !authorName.value.match(/^[A-Za-z\s]{2,50}$/)){
+            document.getElementById("authorNameError").classList.remove("hidden");
+            isValid=false;
+        } else {
+            document.getElementById("authorNameError").classList.add("hidden");
+        }
+        if (!isValid){
+            event.preventDefault();
+        }
+    });
+</script>
+</body>
+</html>

@@ -12,7 +12,7 @@ public class Author {
     private Long id;
     private String fullName;
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Posts> posts;
 
     public Author() {

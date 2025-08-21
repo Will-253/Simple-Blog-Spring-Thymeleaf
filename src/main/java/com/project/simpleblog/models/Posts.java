@@ -1,6 +1,7 @@
 package com.project.simpleblog.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +13,13 @@ public class Posts {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
+    @NotNull(message = "Content is Required")
     private String content;
 
     @OneToMany(mappedBy = "post")
     private List<Comments> comments= new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private Author author;
 
@@ -54,5 +56,13 @@ public class Posts {
 
     public void setComments(List<Comments> comments) {
         this.comments = comments;
+    }
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 }

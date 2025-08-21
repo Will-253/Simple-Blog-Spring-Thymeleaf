@@ -2,28 +2,106 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Create New Post</title>
+    <title>Write New Post</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .error { color: red; font-size: 0.9em; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        select, input[type="text"], textarea { width: 100%; padding: 8px; box-sizing: border-box; font-size: 16px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .radio-group { margin-bottom: 10px; }
+        .radio-group input { margin-right: 5px; }
+        #newAuthorField, #existingAuthorField { min-height: 60px; }
+    </style>
+    <script>
+        function toggleAuthorFields() {
+            const isNewAuthor = document.getElementById('newAuthorRadio').checked;
+            console.log('toggleAuthorFields: isNewAuthor =', isNewAuthor);
+            const existingField = document.getElementById('existingAuthorField');
+            const newField = document.getElementById('newAuthorField');
+            if (existingField) {
+                existingField.style.display = isNewAuthor ? 'none' : 'block';
+                console.log('existingAuthorField display set to', existingField.style.display);
+            }
+            if (newField) {
+                newField.style.display = isNewAuthor ? 'block' : 'none';
+                console.log('newAuthorField display set to', newField.style.display);
+                if (isNewAuthor) {
+                    document.getElementById('newAuthorName')?.focus();
+                }
+            }
+        }
+        function validateForm() {
+            const isNewAuthor = document.getElementById('newAuthorRadio').checked;
+            const existingAuthorId = document.getElementById('authorId')?.value;
+            const newAuthorName = document.getElementById('newAuthorName')?.value?.trim();
+            console.log('validateForm: isNewAuthor =', isNewAuthor, 'existingAuthorId =', existingAuthorId, 'newAuthorName =', newAuthorName);
+            if (isNewAuthor && !newAuthorName) {
+                alert('Please enter a valid author name.');
+                document.getElementById('newAuthorName')?.focus();
+                return false;
+            }
+            if (!isNewAuthor && !existingAuthorId) {
+                alert('Please select an author.');
+                document.getElementById('authorId')?.focus();
+                return false;
+            }
+            return true;
+        }
+        // Initialize on a page load
+        window.onload = function() {
+            const authorType = /*[[${authorType}]]*/ 'existing'; // Get Thymeleaf authorType or default to 'existing'
+            console.log('Page loaded, authorType =', authorType);
+            document.getElementById('existingAuthorRadio').checked = (authorType !== 'new');
+            document.getElementById('newAuthorRadio').checked = (authorType === 'new');
+            toggleAuthorFields();
+        };
+    </script>
 </head>
 <body>
-<ul>
-    <li><a th:href="@{/api/posts}">Home</a></li>
-</ul>
-<div class="container">
-    <form action="#" th:action="@{/api/posts}" th:object="${post}" method="post">
-        <h2>Write New Post</h2>
-        <div>
-            <label for="new-post-title">Title</label>
-            <input id="new-post-title" type="text" placeholder="Title" th:field="*{title}" required/>
+<a href="/api/posts">Back</a>
+<h2>Write New Post</h2>
+
+<form th:action="@{/api/posts}" th:object="${post}" method="post" onsubmit="return validateForm()">
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" th:field="*{title}" id="title" placeholder="Enter post title" required />
+        <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error"></div>
+    </div>
+    <div class="form-group">
+        <label for="content">Content</label>
+        <textarea th:field="*{content}" id="content" placeholder="Enter post content" required></textarea>
+        <div th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="error"></div>
+    </div>
+    <div class="form-group">
+        <label>Author</label>
+        <div class="radio-group">
+            <input type="radio" id="existingAuthorRadio" name="authorType" value="existing" th:checked="${authorType != 'new'}" onclick="toggleAuthorFields()" /> Use Existing Author
+            <input type="radio" id="newAuthorRadio" name="authorType" value="new" th:checked="${authorType == 'new'}" onclick="toggleAuthorFields()" /> Add New Author
         </div>
-        <div>
-            <label for="new-post-body">Content</label>
-            <textarea id="new-post-body" placeholder="Content" th:field="*{content}" required></textarea>
-        </div>
-        <button type="submit">Publish Post</button>
-    </form>
-
-
-
-</div>
+    </div>
+    <div class="form-group" id="existingAuthorField" th:if="${not #lists.isEmpty(selectAuthor)}">
+        <label for="authorId">Select Author</label>
+        <select th:field="*{author.id}" id="authorId" name="authorId">
+            <option value="" disabled selected>--Select Author--</option>
+            <th:block th:each="author : ${selectAuthor}">
+                <option th:value="${author.id}" th:text="${author.fullName}"
+                        th:selected="${author.id == post.author?.id}"></option>
+            </th:block>
+        </select>
+        <div th:if="${#fields.hasErrors('author.id')}" th:errors="*{author.id}" class="error"></div>
+    </div>
+    <div class="form-group" id="newAuthorField">
+        <label for="newAuthorName">New Author Name</label>
+        <input type="text" id="newAuthorName" name="newAuthorName" placeholder="Enter author name" th:required="${authorType == 'new'}" />
+        <div th:if="${newAuthorError}" th:text="${newAuthorError}" class="error"></div>
+    </div>
+    <div th:if="${#lists.isEmpty(selectAuthor) and authorType != 'new'}">
+        <p class="error">No authors are available. Please select 'Add New Author' to create one.</p>
+    </div>
+    <button type="submit">Create Post</button>
+</form>
 </body>
 </html>

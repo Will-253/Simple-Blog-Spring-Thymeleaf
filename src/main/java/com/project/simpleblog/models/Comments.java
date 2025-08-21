@@ -1,6 +1,7 @@
 package com.project.simpleblog.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 
 @Entity
@@ -9,6 +10,7 @@ public class Comments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank(message = "Comment content is required")
     private String content;
 
     @ManyToOne
@@ -44,5 +46,13 @@ public class Comments {
 
     public void setPost(Posts post) {
         this.post = post;
+    }
+
+    public Visitor getVisitor() {
+        return visitor;
+    }
+
+    public void setVisitor(Visitor visitor) {
+        this.visitor = visitor;
     }
 }
