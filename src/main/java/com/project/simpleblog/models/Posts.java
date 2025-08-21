@@ -17,6 +17,10 @@ public class Posts {
     @OneToMany(mappedBy = "post")
     private List<Comments> comments= new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Author author;
+
     public Posts() {
     }
 

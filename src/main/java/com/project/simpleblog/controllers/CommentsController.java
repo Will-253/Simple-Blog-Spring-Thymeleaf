@@ -21,13 +21,7 @@ public class CommentsController {
         this.commentService = commentService;
         this.postService = postService;
     }
-    @GetMapping("/{id}/comments")
-    public String createNewComment(@PathVariable Long id, Model model) {
-        Comments comment = new Comments();
-        model.addAttribute("comment", comment);
-        return "post";
-    }
-
+//  api for creating a new comment(http://localhost:8080/api/posts/{id}/comments)
     @PostMapping("/{id}/comments")
     public String addCommentToPost(@PathVariable Long id, @ModelAttribute("comment") Comments comment){
         Optional<Posts> optionalPost=postService.getById(id);

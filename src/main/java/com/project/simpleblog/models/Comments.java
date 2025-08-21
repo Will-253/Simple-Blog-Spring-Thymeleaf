@@ -2,6 +2,8 @@ package com.project.simpleblog.models;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class Comments {
 
@@ -13,6 +15,10 @@ public class Comments {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Posts post;
+
+    @ManyToOne
+    @JoinColumn(name = "visitor_id")
+    private Visitor visitor;
 
     public Comments() {
     }

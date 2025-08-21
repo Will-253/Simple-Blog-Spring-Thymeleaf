@@ -13,7 +13,7 @@
 
     <a th:href="@{/api/posts/{id}(id=${post.id})}">Cancel</a>
 
-    <form action="#" th:action="@{/api/posts/{id}/remove(id=${post.id})}" method="p" style="display:inline;">
+    <form action="#" th:action="@{/api/posts/{id}/remove(id=${post.id})}" method="post" style="display:inline;">
         <button type="submit">Delete Post</button>
     </form>
 </div>
