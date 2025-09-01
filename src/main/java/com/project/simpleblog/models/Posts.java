@@ -16,7 +16,7 @@ public class Posts {
     @NotNull(message = "Content is Required")
     private String content;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comments> comments= new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
